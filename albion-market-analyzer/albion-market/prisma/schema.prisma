@@ -1,0 +1,85 @@
+// prisma/schema.prisma
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model MarketOrder {
+  id            String   @id @default(cuid())
+  itemId        String
+  itemName      String
+  tier          Int
+  enchantment   Int      @default(0)
+  city          String
+  quality       Int      @default(1)
+  buyPrice      BigInt   @default(0)
+  sellPrice     BigInt   @default(0)
+  buyVolume     Int      @default(0)
+  sellVolume    Int      @default(0)
+  grossProfit   BigInt   @default(0)
+  netProfit     BigInt   @default(0)
+  roi           Float    @default(0)
+  marketFee     Float    @default(0.025)
+  updatedAt     DateTime @default(now()) @updatedAt
+  createdAt     DateTime @default(now())
+
+  @@index([itemId])
+  @@index([city])
+  @@index([tier])
+  @@index([roi])
+  @@index([netProfit])
+  @@index([updatedAt])
+  @@map("market_orders")
+}
+
+model Alert {
+  id         String      @id @default(cuid())
+  itemId     String
+  itemName   String
+  city       String
+  alertType  AlertType
+  threshold  Float
+  triggered  Boolean     @default(false)
+  triggeredAt DateTime?
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+
+  @@map("alerts")
+}
+
+model SyncLog {
+  id         String   @id @default(cuid())
+  status     String
+  itemsCount Int      @default(0)
+  duration   Int      @default(0)
+  error      String?
+  createdAt  DateTime @default(now())
+
+  @@map("sync_logs")
+}
+
+model UserSettings {
+  id             String   @id @default("default")
+  marketFee      Float    @default(0.025)
+  premiumFee     Float    @default(0.03)
+  minRoi         Float    @default(10)
+  minProfit      Int      @default(10000)
+  soundAlerts    Boolean  @default(true)
+  autoRefresh    Boolean  @default(true)
+  refreshInterval Int     @default(60)
+  updatedAt      DateTime @updatedAt
+
+  @@map("user_settings")
+}
+
+enum AlertType {
+  ROI
+  PROFIT
+  PRICE_DROP
+  PRICE_SPIKE
+}
