@@ -2,6 +2,10 @@
   "name": "albion-market-analyzer",
   "version": "1.0.0",
   "private": true,
+  "engines": {
+  "node": "20.x"
+}
+
   "scripts": {
     "dev": "next dev",
     "build": "prisma generate && prisma db push --accept-data-loss && next build",
